@@ -29,7 +29,7 @@ public class UsersController {
     @PostMapping("/")
     public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "users"; // возвращаем на страницу с ошибками
+            return "users";
         }
         usersService.save(user);
         return "redirect:/";
@@ -44,7 +44,7 @@ public class UsersController {
     @PostMapping("/update")
     public String updateUser(@RequestParam("id") long id, @ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "users"; // возвращаем на страницу с ошибками
+            return "users";
         }
         usersService.update(id, user);
         return "redirect:/";
