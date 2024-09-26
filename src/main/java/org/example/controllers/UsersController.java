@@ -1,16 +1,14 @@
 package org.example.controllers;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.example.models.User;
 import org.example.services.UsersService;
-import org.example.services.UsersServiceImpl;
 
 import javax.validation.Valid;
-
 
 @Controller
 public class UsersController {
@@ -18,43 +16,36 @@ public class UsersController {
     private final UsersService usersService;
 
     @Autowired
-    public UsersController(UsersServiceImpl usersService) {
+    public UsersController(UsersService usersService) {
         this.usersService = usersService;
     }
 
-
     @GetMapping("/")
-    public String users(@ModelAttribute("user") User user, Model model, Long id) {
-
-
+    public String users(@ModelAttribute("user") User user, Model model) {
         model.addAttribute("users", usersService.findAll());
-
-        model.addAttribute("user", new User());
-
-
         return "users";
     }
 
-
-    @PostMapping
-    public String addUser(@ModelAttribute("user") @Valid User user) {
-
+    @PostMapping("/")
+    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "users"; // возвращаем на страницу с ошибками
+        }
         usersService.save(user);
-
         return "redirect:/";
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") long id) {
-
+    @PostMapping("/delete")
+    public String deleteUser(@RequestParam("id") long id) {
         usersService.delete(id);
-
         return "redirect:/";
     }
 
-    @PatchMapping("/update/{id}")
-    public String updateUser(@PathVariable("id") long id, User user) {
-
+    @PostMapping("/update")
+    public String updateUser(@RequestParam("id") long id, @ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "users"; // возвращаем на страницу с ошибками
+        }
         usersService.update(id, user);
         return "redirect:/";
     }
